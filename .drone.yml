@@ -1,7 +1,6 @@
 ---
 global-variables:
-  acp-docker-image:
-    - &acp-docker-image 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind:latest
+  acp-docker-image: &acp-docker-image 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind:latest
   TERRAFORM_VERSION:
     - 1.5.3
   TERRAGRUNT_VERSION:
