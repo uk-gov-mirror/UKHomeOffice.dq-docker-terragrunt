@@ -24,7 +24,7 @@ steps:
   pull: if-not-exists
   image: *acp-docker-image
   commands:
-    - docker login -u="ukhomeofficedigital+dqbot" -p=$${DOCKER_PASSWORD} quay.io
+    - docker login -u="ukhomeofficedigital+dqbot" -password-stdin=$${DOCKER_PASSWORD} quay.io
     - docker push quay.io/ukhomeofficedigital/dq-docker-terragrunt:$${DRONE_COMMIT_SHA}
   secrets:
     - DOCKER_PASSWORD
