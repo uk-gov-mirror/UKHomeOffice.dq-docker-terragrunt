@@ -6,6 +6,7 @@ RUN apk upgrade libtasn1
 RUN apk upgrade musl
 RUN apk upgrade curl
 RUN apk upgrade libgcrypt
+RUN rm -rf /var/cache/apk /root/.cache
 
 ARG TERRAGRUNT_VERSION=0.48.4
 
