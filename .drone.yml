@@ -20,18 +20,18 @@ steps:
   when:
     event: push
 
-#- name: image_to_quay
-#  pull: if-not-exists
-#  image: *acp-docker-image
-#  environment:
-#    - DOCKER_HOST=tcp://172.17.0.1:2375
-#  commands:
-#    - docker login -u="ukhomeofficedigital+dqbot" -p=$${DOCKER_PASSWORD} quay.io
-#    - docker push quay.io/ukhomeofficedigital/dq-docker-terragrunt:$${DRONE_COMMIT_SHA}
-#  secrets:
-#    - DOCKER_PASSWORD
-#  when:
-#    event: push
+- name: image_to_quay
+  pull: if-not-exists
+  image: *acp-docker-image
+  environment:
+    - DOCKER_HOST=tcp://172.17.0.1:2375
+  commands:
+    - docker login -u="ukhomeofficedigital+dqbot" -p=$${DOCKER_PASSWORD} quay.io
+    - docker push quay.io/ukhomeofficedigital/dq-docker-terragrunt:$${DRONE_COMMIT_SHA}
+  secrets:
+    - DOCKER_PASSWORD
+  when:
+    event: push
 
 - name: trivy-scan
   pull: if-not-exists
