@@ -1,6 +1,6 @@
-ARG TERRAFORM_VERSION=${TERRAFORM_VERSION}
+ARG TF_VERSION=${TERRAFORM_VERSION}
 
-FROM hashicorp/terraform:${TERRAFORM_VERSION}
+FROM hashicorp/terraform:${TF_VERSION}
 
 RUN apk add --update --upgrade --no-cache bash git openssh
 RUN apk upgrade libtasn1
