@@ -1,7 +1,6 @@
 ARG TERRAFORM_VERSION=${TERRAFORM_VERSION}
 
-#FROM hashicorp/terraform:${TERRAFORM_VERSION}
-FROM hashicorp/terraform:1.5.3
+FROM hashicorp/terraform:${TERRAFORM_VERSION}
 
 RUN apk add --update --upgrade --no-cache bash git openssh
 RUN apk upgrade libtasn1
@@ -11,9 +10,9 @@ RUN apk upgrade libgcrypt
 
 ARG TERRAGRUNT_VERSION=${TERRAGRUNT_VERSION}
 
-#ADD https://github.com/gruntwork-io/terragrunt/releases/download/v${TERRAGRUNT_VERSION}/terragrunt_linux_amd64 /usr/local/bin/terragrunt
+ADD https://github.com/gruntwork-io/terragrunt/releases/download/v${TERRAGRUNT_VERSION}/terragrunt_linux_amd64 /usr/local/bin/terragrunt
 
-#RUN chmod +x /usr/local/bin/terragrunt
+RUN chmod +x /usr/local/bin/terragrunt
 
 WORKDIR /apps
 
