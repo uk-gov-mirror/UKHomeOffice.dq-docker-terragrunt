@@ -11,20 +11,13 @@ platform:
   arch: amd64
 
 steps:
-- name: build_docker_image
+- name: build_docker_image_and_push_to_quay
   pull: if-not-exists
   image: *acp-docker-image
   commands:
     - /usr/local/bin/wait
     - docker build -t dq-docker-terragrunt:$${DRONE_COMMIT_SHA} .
-  when:
-    event: push
-
-- name: image_to_quay
-  pull: if-not-exists
-  image: *acp-docker-image
-  commands:
-    - docker login --username $${DOCKER_USERNAME} --password $${DOCKER_PASSWORD} quay.io
+    - docker login --username $${DOCKER_USERNAME} --password-stdin $${DOCKER_PASSWORD} quay.io
     - docker push quay.io/ukhomeofficedigital/dq-docker-terragrunt:$${DRONE_COMMIT_SHA}
   environment:
     DOCKER_USERNAME:
@@ -33,6 +26,20 @@ steps:
       from_secret: DOCKER_PASSWORD
   when:
     event: push
+
+#- name: image_to_quay
+#  pull: if-not-exists
+#  image: *acp-docker-image
+#  commands:
+#    - docker login --username $${DOCKER_USERNAME} --password-stdin $${DOCKER_PASSWORD} quay.io
+#    - docker push quay.io/ukhomeofficedigital/dq-docker-terragrunt:$${DRONE_COMMIT_SHA}
+#  environment:
+#    DOCKER_USERNAME:
+#      from_secret: DOCKER_USERNAME
+#    DOCKER_PASSWORD:
+#      from_secret: DOCKER_PASSWORD
+#  when:
+#    event: push
 
 #- name: build_and_push_to_quay
 #  pull: if-not-exists
