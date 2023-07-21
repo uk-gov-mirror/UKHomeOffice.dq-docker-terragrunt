@@ -1,25 +1,79 @@
-matrix:
-  TERRAFORM_VERSION:
-    - 0.12.25
-  TERRAGRUNT_VERSION:
-    - 0.23.18
+---
+kind: pipeline
+name: default
+type: kubernetes
 
-pipeline:
+platform:
+  os: linux
+  arch: amd64
 
-  build:
-    image: ukhomeoffice/drone-docker
-    repo: quay.io/ukhomeofficedigital/dq-docker-terragrunt
-    secrets: [ docker_username, docker_password ]
-    registry: quay.io
-    context: app
-    dockerfile: app/Dockerfile
+
+steps:
+- name: build_docker_image_and_push_to_quay
+  pull: if-not-exists
+  image: plugins/docker
+  settings:
+    dockerfile: Dockerfile
     force_tag: true
-    build_args:
-      - TERRAFORM_VERSION=${TERRAFORM_VERSION}
-      - TERRAGRUNT_VERSION=${TERRAGRUNT_VERSION}
+    registry: quay.io
+    repo: quay.io/ukhomeofficedigital/dq-docker-terragrunt
     tags:
       - ${DRONE_COMMIT_SHA}
-      - ${DRONE_BUILD_NUMBER}
-      - v${TERRAGRUNT_VERSION}
-    when:
-      event: push
+    build_args:
+      - TERRAFORM_VERSION=1.5.3
+      - TERRAGRUNT_VERSION=0.48.4
+    cache_from: quay.io/ukhomeofficedigital/dq-docker-terragrunt:v0.48.4
+  environment:
+    DOCKER_USERNAME:
+      from_secret: DOCKER_USERNAME
+    DOCKER_PASSWORD:
+      from_secret: DOCKER_PASSWORD
+  when:
+    branch:
+      exclude:
+      - master
+    event:
+    - push
+
+
+- name: trivy-scan
+  pull: if-not-exists
+  image: quay.io/ukhomeofficedigital/trivyscanner:master
+  commands:
+  - trivy image --ignore-unfixed --exit-code 0 --no-progress quay.io/ukhomeofficedigital/dq-docker-terragrunt:${DRONE_COMMIT_SHA}
+  when:
+    branch:
+      exclude:
+        - master
+    event:
+      - push
+
+
+- name: build-master
+  pull: if-not-exists
+  image: plugins/docker
+  settings:
+    dockerfile: Dockerfile
+    force_tag: true
+    registry: quay.io
+    repo: quay.io/ukhomeofficedigital/dq-docker-terragrunt
+    tags:
+      - ${DRONE_COMMIT_SHA}
+      - v0.48.4
+    build_args:
+      - TERRAFORM_VERSION=1.5.3
+      - TERRAGRUNT_VERSION=0.48.4
+    cache_from: quay.io/ukhomeofficedigital/dq-docker-terragrunt:v0.48.4
+  environment:
+    DOCKER_USERNAME:
+      from_secret: DOCKER_USERNAME
+    DOCKER_PASSWORD:
+      from_secret: DOCKER_PASSWORD
+  when:
+    branch:
+      - master
+    event:
+      - promote
+    target:
+      - production
+
