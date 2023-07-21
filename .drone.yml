@@ -1,5 +1,9 @@
 ---
-#global-variables:
+global-variables:
+  TERRAFORM_VERSION:
+    - 1.5.3
+  TERRAGRUNT_VERSION:
+    - 0.48.4
 #  acp-docker-image: &acp-docker-image 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind:latest
 
 kind: pipeline
@@ -41,8 +45,10 @@ steps:
     registry: quay.io
     repo: quay.io/ukhomeofficedigital/dq-docker-terragrunt
     tags:
-    - ${DRONE_COMMIT_SHA}
-    cache_from: quay.io/ukhomeofficedigital/dq-docker-terragrunt:latest
+      - ${DRONE_COMMIT_SHA}
+    build_args:
+      - TERRAFORM_VERSION=${TERRAFORM_VERSION}
+      - TERRAGRUNT_VERSION=${TERRAGRUNT_VERSION}
   environment:
     DOCKER_USERNAME:
       from_secret: DOCKER_USERNAME
@@ -64,9 +70,9 @@ steps:
   when:
     branch:
       exclude:
-      - master
+        - master
     event:
-    - push
+      - push
 
 
 - name: build-master
