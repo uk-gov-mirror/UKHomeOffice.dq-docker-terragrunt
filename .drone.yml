@@ -47,8 +47,8 @@ steps:
     tags:
       - ${DRONE_COMMIT_SHA}
     build_args:
-      - TERRAFORM_VERSION=${TERRAFORM_VERSION}
-      - TERRAGRUNT_VERSION=${TERRAGRUNT_VERSION}
+      - TERRAFORM_VERSION=1.5.3
+      - TERRAGRUNT_VERSION=0.48.4
   environment:
     DOCKER_USERNAME:
       from_secret: DOCKER_USERNAME
