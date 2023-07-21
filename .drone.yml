@@ -42,7 +42,7 @@ steps:
     tags:
       - ${DRONE_COMMIT_SHA}
     build_args:
-      - TERRAFORM_VERSION=${TF_VERSION}
+      - TERRAFORM_VERSION=1.5.3
       - TERRAGRUNT_VERSION=${TG_VERSION}
     cache_from: quay.io/ukhomeofficedigital/dq-docker-terragrunt:v${TG_VERSION}
   environment:
