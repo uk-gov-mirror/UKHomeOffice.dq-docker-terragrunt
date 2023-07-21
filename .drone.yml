@@ -1,10 +1,8 @@
 ---
 global-variables:
-  TERRAFORM_VERSION:
-    - 1.5.3
-  TERRAGRUNT_VERSION:
-    - 0.48.4
 #  acp-docker-image: &acp-docker-image 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind:latest
+  TERRAFORM_VERSION: &TERRAFORM_VERSION 1.5.3
+  TERRAGRUNT_VERSION: &TERRAGRUNT_VERSION 0.48.4
 
 kind: pipeline
 name: default
@@ -14,7 +12,9 @@ platform:
   os: linux
   arch: amd64
 
-steps:
+
+
+#steps:
 #- name: build_docker_image_and_push_to_quay
 #  pull: if-not-exists
 #  image: *acp-docker-image
@@ -35,7 +35,7 @@ steps:
 #        - master
 #    event: push
 
-
+steps:
 - name: build_docker_image_and_push_to_quay
   pull: if-not-exists
   image: plugins/docker
@@ -47,8 +47,8 @@ steps:
     tags:
       - ${DRONE_COMMIT_SHA}
     build_args:
-      - TERRAFORM_VERSION=1.5.3
-      - TERRAGRUNT_VERSION=0.48.4
+      - TERRAFORM_VERSION=${TERRAFORM_VERSION}
+      - TERRAGRUNT_VERSION=${TERRAGRUNT_VERSION}
   environment:
     DOCKER_USERNAME:
       from_secret: DOCKER_USERNAME
