@@ -31,7 +31,6 @@ steps:
 #        - master
 #    event: push
 
-
 - name: build_docker_image_and_push_to_quay
   pull: if-not-exists
   image: plugins/docker
@@ -68,6 +67,7 @@ steps:
     event:
     - push
 
+
 - name: build-master
   pull: if-not-exists
   image: plugins/docker
@@ -98,7 +98,6 @@ steps:
 services:
 - name: docker
   image: *acp-docker-image
-
 
 
 
