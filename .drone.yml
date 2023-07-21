@@ -42,9 +42,12 @@ steps:
     tags:
       - ${DRONE_COMMIT_SHA}
     build_args:
-      - TERRAFORM_VERSION=1.5.3
-      - TERRAGRUNT_VERSION=0.48.4
+      - TERRAFORM_VERSION=${TF_VERSION}
+      - TERRAGRUNT_VERSION=${TG_VERSION}
+    cache_from: quay.io/ukhomeofficedigital/dq-docker-terragrunt:v${TG_VERSION}
   environment:
+    TF_VERSION: 1.5.3
+    TG_VERSION: 0.48.4
     DOCKER_USERNAME:
       from_secret: DOCKER_USERNAME
     DOCKER_PASSWORD:
@@ -83,6 +86,9 @@ steps:
 #      - v${TERRAGRUNT_VERSION}
       - v0.48.4
 #    cache_from: quay.io/ukhomeofficedigital/dq-docker-terragrunt:v${TERRAGRUNT_VERSION}
+    build_args:
+      - TERRAFORM_VERSION=1.5.3
+      - TERRAGRUNT_VERSION=0.48.4
     cache_from: quay.io/ukhomeofficedigital/dq-docker-terragrunt:v0.48.4
   environment:
     DOCKER_USERNAME:
