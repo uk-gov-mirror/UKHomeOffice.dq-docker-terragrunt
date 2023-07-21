@@ -1,6 +1,5 @@
-#ARG TF_VERSION=1.5.3
-ARG TF_VERSION=${TERRAFORM_VERSION}
-FROM hashicorp/terraform:${TF_VERSION}
+ARG TERRAFORM_VERSION=${TERRAFORM_VERSION}
+FROM hashicorp/terraform:${TERRAFORM_VERSION}
 
 RUN apk add --update --upgrade --no-cache bash git openssh
 RUN apk upgrade libtasn1
@@ -9,7 +8,6 @@ RUN apk upgrade curl
 RUN apk upgrade libgcrypt
 RUN rm -rf /var/cache/apk /root/.cache
 
-#ARG TERRAGRUNT_VERSION=0.48.4
 ARG TERRAGRUNT_VERSION=${TERRAGRUNT_VERSION}
 
 ADD https://github.com/gruntwork-io/terragrunt/releases/download/v${TERRAGRUNT_VERSION}/terragrunt_linux_amd64 /usr/local/bin/terragrunt
