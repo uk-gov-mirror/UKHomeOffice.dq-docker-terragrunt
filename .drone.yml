@@ -8,28 +8,6 @@ platform:
   arch: amd64
 
 
-
-#steps:
-#- name: build_docker_image_and_push_to_quay
-#  pull: if-not-exists
-#  image: *acp-docker-image
-#  commands:
-#    - /usr/local/bin/wait
-#    - docker build -t dq-docker-terragrunt:$${DRONE_COMMIT_SHA} .
-#    - docker login --username $${DOCKER_USERNAME} --password $${DOCKER_PASSWORD} quay.io
-#    - docker tag dq-docker-terragrunt:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/dq-docker-terragrunt:$${DRONE_COMMIT_SHA}
-#    - docker push quay.io/ukhomeofficedigital/dq-docker-terragrunt:$${DRONE_COMMIT_SHA}
-#  environment:
-#    DOCKER_USERNAME:
-#      from_secret: DOCKER_USERNAME
-#    DOCKER_PASSWORD:
-#      from_secret: DOCKER_PASSWORD
-#  when:
-#    branch:
-#      exclude:
-#        - master
-#    event: push
-
 steps:
 - name: build_docker_image_and_push_to_quay
   pull: if-not-exists
@@ -46,8 +24,6 @@ steps:
       - TERRAGRUNT_VERSION=0.48.4
     cache_from: quay.io/ukhomeofficedigital/dq-docker-terragrunt:v0.48.4
   environment:
-    TF_VERSION: 1.5.3
-    TG_VERSION: 0.48.4
     DOCKER_USERNAME:
       from_secret: DOCKER_USERNAME
     DOCKER_PASSWORD:
@@ -83,9 +59,7 @@ steps:
     repo: quay.io/ukhomeofficedigital/dq-docker-terragrunt
     tags:
       - ${DRONE_COMMIT_SHA}
-#      - v${TERRAGRUNT_VERSION}
       - v0.48.4
-#    cache_from: quay.io/ukhomeofficedigital/dq-docker-terragrunt:v${TERRAGRUNT_VERSION}
     build_args:
       - TERRAFORM_VERSION=1.5.3
       - TERRAGRUNT_VERSION=0.48.4
@@ -103,28 +77,3 @@ steps:
     target:
       - production
 
-#services:
-#- name: docker
-#  image: *acp-docker-image
-
-
-
-#pipeline:
-#
-#  build:
-#    image: ukhomeoffice/drone-docker
-#    repo: quay.io/ukhomeofficedigital/dq-docker-terragrunt
-#    secrets: [ docker_username, docker_password ]
-#    registry: quay.io
-#    context: app
-#    dockerfile: app/Dockerfile
-#    force_tag: true
-#    build_args:
-#      - TERRAFORM_VERSION=${TERRAFORM_VERSION}
-#      - TERRAGRUNT_VERSION=${TERRAGRUNT_VERSION}
-#    tags:
-#      - ${DRONE_COMMIT_SHA}
-#      - ${DRONE_BUILD_NUMBER}
-#      - v${TERRAGRUNT_VERSION}
-#    when:
-#      event: push
