@@ -18,6 +18,7 @@ steps:
     - /usr/local/bin/wait
     - docker build -t dq-docker-terragrunt:$${DRONE_COMMIT_SHA} .
     - docker login --username $${DOCKER_USERNAME} --password $${DOCKER_PASSWORD} quay.io
+    - docker tag dq-docker-terragrunt:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/dq-docker-terragrunt:$${DRONE_COMMIT_SHA}
     - docker push quay.io/ukhomeofficedigital/dq-docker-terragrunt:$${DRONE_COMMIT_SHA}
   environment:
     DOCKER_USERNAME:
