@@ -1,11 +1,11 @@
 ARG TERRAFORM_VERSION=${TERRAFORM_VERSION}
 FROM hashicorp/terraform:${TERRAFORM_VERSION}
 
-RUN apk add --update --upgrade --no-cache bash git openssh
-RUN apk upgrade libtasn1
-RUN apk upgrade musl
-RUN apk upgrade curl
-RUN apk upgrade libgcrypt
+RUN apk add --update --upgrade --no-cache bash git openssh \
+    libtasn1 \
+    musl \
+    curl \
+    libgcrypt
 RUN rm -rf /var/cache/apk /root/.cache
 
 ARG TERRAGRUNT_VERSION=${TERRAGRUNT_VERSION}
