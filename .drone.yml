@@ -1,4 +1,7 @@
 ---
+global-variables:
+  acp-docker-image: &acp-docker-image 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind:latest
+
 kind: pipeline
 name: default
 type: kubernetes
@@ -9,20 +12,26 @@ platform:
 
 
 steps:
-- name: build_docker_image_and_push_to_quay
+- name: build_docker_image
   pull: if-not-exists
-  image: plugins/docker
-  settings:
-    dockerfile: Dockerfile
-    force_tag: true
-    registry: quay.io
-    repo: quay.io/ukhomeofficedigital/dq-docker-terragrunt
-    tags:
-      - ${DRONE_COMMIT_SHA}
-    build_args:
-      - TERRAFORM_VERSION=1.5.3
-      - TERRAGRUNT_VERSION=0.48.4
-    cache_from: quay.io/ukhomeofficedigital/dq-docker-terragrunt:v0.48.4
+  image: *acp-docker-image
+  commands:
+    - /usr/local/bin/wait
+    - docker build --build-arg TERRAFORM_VERSION=$${TERRAFORM_VERSION} --build-arg TERRAGRUNT_VERSION=$${TERRAGRUNT_VERSION} --tag dq-docker-terragrunt:$${DRONE_COMMIT_SHA} .
+  environment:
+    TERRAFORM_VERSION: 1.5.3
+    TERRAGRUNT_VERSION: 0.48.4
+  when:
+    event:
+    - push
+
+- name: push_image_to_quay
+  pull: if-not-exists
+  image: *acp-docker-image
+  commands:
+    - docker login --username=$${DOCKER_USERNAME} --password=$${DOCKER_PASSWORD} quay.io
+    - docker tag dq-docker-terragrunt:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/dq-docker-terragrunt:$${DRONE_COMMIT_SHA}
+    - docker push quay.io/ukhomeofficedigital/dq-docker-terragrunt:$${DRONE_COMMIT_SHA}
   environment:
     DOCKER_USERNAME:
       from_secret: DOCKER_USERNAME
@@ -35,8 +44,7 @@ steps:
     event:
     - push
 
-
-- name: trivy-scan
+- name: trivy_scan
   pull: if-not-exists
   image: quay.io/ukhomeofficedigital/trivyscanner:master
   commands:
@@ -49,22 +57,15 @@ steps:
       - push
 
 
-- name: build-master
+- name: push_master_image_to_quay
   pull: if-not-exists
-  image: plugins/docker
-  settings:
-    dockerfile: Dockerfile
-    force_tag: true
-    registry: quay.io
-    repo: quay.io/ukhomeofficedigital/dq-docker-terragrunt
-    tags:
-      - ${DRONE_COMMIT_SHA}
-      - v0.48.4
-    build_args:
-      - TERRAFORM_VERSION=1.5.3
-      - TERRAGRUNT_VERSION=0.48.4
-    cache_from: quay.io/ukhomeofficedigital/dq-docker-terragrunt:v0.48.4
+  image: *acp-docker-image
+  commands:
+    - docker login --username=$${DOCKER_USERNAME} --password=$${DOCKER_PASSWORD} quay.io
+    - docker tag dq-docker-terragrunt:$${DRONE_COMMIT_SHA} quay.io/ukhomeofficedigital/dq-docker-terragrunt:v${TERRAGRUNT_VERSION}
+    - docker push quay.io/ukhomeofficedigital/dq-docker-terragrunt:v${TERRAGRUNT_VERSION}
   environment:
+    TERRAGRUNT_VERSION: 0.48.4
     DOCKER_USERNAME:
       from_secret: DOCKER_USERNAME
     DOCKER_PASSWORD:
@@ -73,7 +74,22 @@ steps:
     branch:
       - master
     event:
-      - promote
-    target:
-      - production
+    - push
 
+- name: trivy_scan_master
+  pull: if-not-exists
+  image: quay.io/ukhomeofficedigital/trivyscanner:master
+  commands:
+  - trivy image --ignore-unfixed --exit-code 0 --no-progress quay.io/ukhomeofficedigital/dq-docker-terragrunt:v${TERRAGRUNT_VERSION}
+  environment:
+    TERRAGRUNT_VERSION: 0.48.4
+  when:
+    branch:
+        - master
+    event:
+      - push
+
+
+services:
+- name: docker
+  image: *acp-docker-image
