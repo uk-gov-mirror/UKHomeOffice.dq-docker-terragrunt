@@ -17,7 +17,7 @@ steps:
   image: *acp-docker-image
   commands:
     - /usr/local/bin/wait
-    - docker build --build-arg TERRAFORM_VERSION=$${TERRAFORM_VERSION} --build-arg TERRAGRUNT_VERSION=$${TERRAGRUNT_VERSION} --tag dq-docker-terragrunt:b-$${DRONE_BUILD_NUMBER} .
+    - docker build --build-arg TERRAFORM_VERSION=$${TERRAFORM_VERSION} --build-arg TERRAGRUNT_VERSION=$${TERRAGRUNT_VERSION} --tag dq-docker-terragrunt:b-${DRONE_BUILD_NUMBER} .
   environment:
     TERRAFORM_VERSION:
       from_secret: TERRAFORM_VERSION
@@ -32,8 +32,8 @@ steps:
   image: *acp-docker-image
   commands:
     - docker login --username=$${DOCKER_USERNAME} --password=$${DOCKER_PASSWORD} quay.io
-    - docker tag dq-docker-terragrunt:b-$${DRONE_BUILD_NUMBER} quay.io/ukhomeofficedigital/dq-docker-terragrunt:b-$${DRONE_BUILD_NUMBER}
-    - docker push quay.io/ukhomeofficedigital/dq-docker-terragrunt:b-$${DRONE_BUILD_NUMBER}
+    - docker tag dq-docker-terragrunt:b-${DRONE_BUILD_NUMBER} quay.io/ukhomeofficedigital/dq-docker-terragrunt:b-${DRONE_BUILD_NUMBER}
+    - docker push quay.io/ukhomeofficedigital/dq-docker-terragrunt:b-${DRONE_BUILD_NUMBER}
   environment:
     DOCKER_USERNAME:
       from_secret: DOCKER_USERNAME
@@ -64,7 +64,7 @@ steps:
   image: *acp-docker-image
   commands:
     - docker login --username=$${DOCKER_USERNAME} --password=$${DOCKER_PASSWORD} quay.io
-    - docker tag dq-docker-terragrunt:b-$${DRONE_BUILD_NUMBER} quay.io/ukhomeofficedigital/dq-docker-terragrunt:v$${TERRAGRUNT_VERSION}
+    - docker tag dq-docker-terragrunt:b-${DRONE_BUILD_NUMBER} quay.io/ukhomeofficedigital/dq-docker-terragrunt:v$${TERRAGRUNT_VERSION}
     - docker push quay.io/ukhomeofficedigital/dq-docker-terragrunt:v$${TERRAGRUNT_VERSION}
   environment:
     TERRAGRUNT_VERSION:
@@ -83,7 +83,7 @@ steps:
   pull: if-not-exists
   image: quay.io/ukhomeofficedigital/trivyscanner:master
   commands:
-  - trivy image --ignore-unfixed --exit-code 0 --no-progress quay.io/ukhomeofficedigital/dq-docker-terragrunt:v${TERRAGRUNT_VERSION}
+  - trivy image --ignore-unfixed --exit-code 0 --no-progress quay.io/ukhomeofficedigital/dq-docker-terragrunt:v$${TERRAGRUNT_VERSION}
   environment:
     TERRAGRUNT_VERSION:
       from_secret: TERRAGRUNT_VERSION
