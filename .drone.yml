@@ -3,13 +3,16 @@ global-variables:
   acp-docker-image: &acp-docker-image 340268328991.dkr.ecr.eu-west-2.amazonaws.com/acp/dind:latest
 
 kind: pipeline
-name: default
 type: kubernetes
+name: default
 
 platform:
   os: linux
   arch: amd64
 
+environment:
+  TERRAFORM_VERSION: 0.13.7
+  TERRAGRUNT_VERSION: 0.26.2
 
 steps:
 - name: build_docker_image
@@ -18,11 +21,6 @@ steps:
   commands:
     - /usr/local/bin/wait
     - docker build --build-arg TERRAFORM_VERSION=$${TERRAFORM_VERSION} --build-arg TERRAGRUNT_VERSION=$${TERRAGRUNT_VERSION} --tag dq-docker-terragrunt:b-${DRONE_BUILD_NUMBER} .
-  environment:
-    TERRAFORM_VERSION:
-      from_secret: TERRAFORM_VERSION
-    TERRAGRUNT_VERSION:
-      from_secret: TERRAGRUNT_VERSION
   when:
     event:
     - push
@@ -67,8 +65,6 @@ steps:
     - docker tag dq-docker-terragrunt:b-${DRONE_BUILD_NUMBER} quay.io/ukhomeofficedigital/dq-docker-terragrunt:v$${TERRAGRUNT_VERSION}
     - docker push quay.io/ukhomeofficedigital/dq-docker-terragrunt:v$${TERRAGRUNT_VERSION}
   environment:
-    TERRAGRUNT_VERSION:
-      from_secret: TERRAGRUNT_VERSION
     DOCKER_USERNAME:
       from_secret: DOCKER_USERNAME
     DOCKER_PASSWORD:
@@ -84,9 +80,6 @@ steps:
   image: quay.io/ukhomeofficedigital/trivyscanner:master
   commands:
   - trivy image --ignore-unfixed --exit-code 0 --no-progress quay.io/ukhomeofficedigital/dq-docker-terragrunt:v$${TERRAGRUNT_VERSION}
-  environment:
-    TERRAGRUNT_VERSION:
-      from_secret: TERRAGRUNT_VERSION
   when:
     branch:
         - master
