@@ -11,8 +11,8 @@ platform:
   arch: amd64
 
 environment:
-  TERRAFORM_VERSION: 0.13.7
-  TERRAGRUNT_VERSION: 0.26.2
+  TERRAFORM_VERSION: 0.14.11
+  TERRAGRUNT_VERSION: 0.28.6
 
 steps:
 - name: build_docker_image
