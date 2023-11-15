@@ -9,8 +9,9 @@ RUN apk add --update --upgrade --no-cache bash \
     openssh \
     libtasn1 \
     musl \
-    curl \
-    libgcrypt
+    curl=8.4.0-r0 \
+    libgcrypt \
+    nghttp2-dev=1.57.0-r0
 RUN rm -rf /var/cache/apk /root/.cache
 
 # Terragrunt version passed in from Drone
