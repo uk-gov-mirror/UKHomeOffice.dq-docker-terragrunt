@@ -12,8 +12,8 @@ platform:
 
 
 environment:
-  TERRAFORM_VERSION: 1.6.4
-  TERRAGRUNT_VERSION: 0.53.5
+  TERRAFORM_VERSION: 1.6.5
+  TERRAGRUNT_VERSION: 0.53.8
 
 steps:
 - name: build_docker_image
@@ -63,8 +63,8 @@ steps:
   image: *acp-docker-image
   commands:
     - docker login --username=$${DOCKER_USERNAME} --password=$${DOCKER_PASSWORD} quay.io
-    - docker tag dq-docker-terragrunt:b-${DRONE_BUILD_NUMBER} quay.io/ukhomeofficedigital/dq-docker-terragrunt:v$${TERRAGRUNT_VERSION}
-    - docker push quay.io/ukhomeofficedigital/dq-docker-terragrunt:v$${TERRAGRUNT_VERSION}
+    - docker tag dq-docker-terragrunt:b-${DRONE_BUILD_NUMBER} quay.io/ukhomeofficedigital/dq-docker-terragrunt:TGv$${TERRAGRUNT_VERSION}_TFv$${TERRAFORM_VERSION}
+    - docker push quay.io/ukhomeofficedigital/dq-docker-terragrunt:TGv$${TERRAGRUNT_VERSION}_TFv$${TERRAFORM_VERSION}
   environment:
     DOCKER_USERNAME:
       from_secret: DOCKER_USERNAME
@@ -80,7 +80,7 @@ steps:
   pull: if-not-exists
   image: quay.io/ukhomeofficedigital/trivyscanner:master
   commands:
-  - trivy image --ignore-unfixed --exit-code 0 --no-progress quay.io/ukhomeofficedigital/dq-docker-terragrunt:v$${TERRAGRUNT_VERSION}
+  - trivy image --ignore-unfixed --exit-code 0 --no-progress quay.io/ukhomeofficedigital/dq-docker-terragrunt:TGv$${TERRAGRUNT_VERSION}_TFv$${TERRAFORM_VERSION}
   when:
     branch:
         - master
