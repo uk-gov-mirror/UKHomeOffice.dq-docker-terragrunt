@@ -24,8 +24,5 @@ RUN chmod +x /usr/local/bin/terragrunt
 
 WORKDIR /apps
 
-RUN /usr/local/bin/terraform --version
-RUN /usr/local/bin/terragrunt --version
-
 # When this Docker Image is called, run Terragrunt executable
 ENTRYPOINT ["/usr/local/bin/terragrunt"]
