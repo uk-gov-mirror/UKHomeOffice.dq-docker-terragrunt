@@ -12,8 +12,8 @@ platform:
 
 
 environment:
-  TERRAFORM_VERSION: 1.6.5
-  TERRAGRUNT_VERSION: 0.53.8
+  TERRAFORM_VERSION: 1.6.6
+  TERRAGRUNT_VERSION: 0.54.4
 
 steps:
 - name: build_docker_image
